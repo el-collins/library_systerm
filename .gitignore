@@ -1,0 +1,8 @@
+*.env
+*.pyc
+*.cpython-*
+
+.vercel
+
+# node moudule
+node_modules
