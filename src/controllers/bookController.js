@@ -138,11 +138,7 @@ class BookController {
 
   // Update book availability
   static async updateBookAvailability(req, res, next) {
-    console.log("updateBookAvailability called"); // Check if method is called
-    console.log(req.params.id);
-
     const { available } = req.body;
-    console.log(req.body);
 
     if (typeof available !== "boolean") {
       return res.status(400).json({
@@ -159,21 +155,19 @@ class BookController {
       const book = await Book.findByIdAndUpdate(
         req.params.id,
         { available },
-        { new: true }
+        { new: true, runValidators: true }
       );
 
-      console.log(book);
-
-      // if (!book) {
-      //   return res.status(404).json({
-      //     status: "error",
-      //     code: 404,
-      //     message: "Book not found",
-      //     errors: {
-      //       details: "The requested book does not exist.",
-      //     },
-      //   });
-      // }
+      if (!book) {
+        return res.status(404).json({
+          status: "error",
+          code: 404,
+          message: "Book not found",
+          errors: {
+            details: "The requested book does not exist.",
+          },
+        });
+      }
 
       res.status(200).json({
         status: "success",
