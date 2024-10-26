@@ -1,6 +1,6 @@
 // src/controllers/bookController.js
-const Book = require('../models/Book');
-const { validateBook } = require('../utils/validation');
+const Book = require("../models/Book");
+const { validateBook } = require("../utils/validation");
 
 class BookController {
   // Get all books with pagination
@@ -11,33 +11,30 @@ class BookController {
       const skip = (page - 1) * limit;
 
       const [books, total] = await Promise.all([
-        Book.find()
-          .skip(skip)
-          .limit(limit)
-          .sort({ createdAt: -1 }),
-        Book.countDocuments()
+        Book.find().skip(skip).limit(limit).sort({ createdAt: -1 }),
+        Book.countDocuments(),
       ]);
 
       const totalPages = Math.ceil(total / limit);
 
       const response = {
-        status: 'success',
+        status: "success",
         code: 200,
-        message: 'Books retrieved successfully',
+        message: "Books retrieved successfully",
         data: {
           books,
           pagination: {
             current_page: page,
             per_page: limit,
             total_pages: totalPages,
-            total_books: total
-          }
+            total_books: total,
+          },
         },
         links: {
           self: `/api/v1/books?page=${page}`,
           next: page < totalPages ? `/api/v1/books?page=${page + 1}` : null,
-          prev: page > 1 ? `/api/v1/books?page=${page - 1}` : null
-        }
+          prev: page > 1 ? `/api/v1/books?page=${page - 1}` : null,
+        },
       };
 
       res.status(200).json(response);
@@ -50,23 +47,23 @@ class BookController {
   static async getBookById(req, res, next) {
     try {
       const book = await Book.findById(req.params.id);
-      
+
       if (!book) {
         return res.status(404).json({
-          status: 'error',
+          status: "error",
           code: 404,
-          message: 'Book not found',
+          message: "Book not found",
           errors: {
-            details: 'The requested book does not exist.'
-          }
+            details: "The requested book does not exist.",
+          },
         });
       }
 
       res.status(200).json({
-        status: 'success',
+        status: "success",
         code: 200,
-        message: 'Book retrieved successfully',
-        data: { book }
+        message: "Book retrieved successfully",
+        data: { book },
       });
     } catch (error) {
       next(error);
@@ -79,20 +76,20 @@ class BookController {
       const validation = validateBook(req.body);
       if (!validation.isValid) {
         return res.status(400).json({
-          status: 'error',
+          status: "error",
           code: 400,
-          message: 'Validation failed',
-          errors: validation.errors
+          message: "Validation failed",
+          errors: validation.errors,
         });
       }
 
       const book = await Book.create(req.body);
-      
+
       res.status(201).json({
-        status: 'success',
+        status: "success",
         code: 201,
-        message: 'Book created successfully',
-        data: { book }
+        message: "Book created successfully",
+        data: { book },
       });
     } catch (error) {
       next(error);
@@ -105,35 +102,34 @@ class BookController {
       const validation = validateBook(req.body, true);
       if (!validation.isValid) {
         return res.status(400).json({
-          status: 'error',
+          status: "error",
           code: 400,
-          message: 'Validation failed',
-          errors: validation.errors
+          message: "Validation failed",
+          errors: validation.errors,
         });
       }
 
-      const book = await Book.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true, runValidators: true }
-      );
+      const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+      });
 
       if (!book) {
         return res.status(404).json({
-          status: 'error',
+          status: "error",
           code: 404,
-          message: 'Book not found',
+          message: "Book not found",
           errors: {
-            details: 'The requested book does not exist.'
-          }
+            details: "The requested book does not exist.",
+          },
         });
       }
 
       res.status(200).json({
-        status: 'success',
+        status: "success",
         code: 200,
-        message: 'Book updated successfully',
-        data: { book }
+        message: "Book updated successfully",
+        data: { book },
       });
     } catch (error) {
       next(error);
@@ -142,9 +138,13 @@ class BookController {
 
   // Update book availability
   static async updateBookAvailability(req, res, next) {
-    const { isAvailable } = req.body;
+    console.log("updateBookAvailability called"); // Check if method is called
+    console.log(req.params.id);
 
-    if (typeof isAvailable !== "boolean") {
+    const { available } = req.body;
+    console.log(req.body);
+
+    if (typeof available !== "boolean") {
       return res.status(400).json({
         status: "error",
         code: 400,
@@ -158,20 +158,22 @@ class BookController {
     try {
       const book = await Book.findByIdAndUpdate(
         req.params.id,
-        { isAvailable },
+        { available },
         { new: true }
       );
 
-      if (!book) {
-        return res.status(404).json({
-          status: "error",
-          code: 404,
-          message: "Book not found",
-          errors: {
-            details: "The requested book does not exist.",
-          },
-        });
-      }
+      console.log(book);
+
+      // if (!book) {
+      //   return res.status(404).json({
+      //     status: "error",
+      //     code: 404,
+      //     message: "Book not found",
+      //     errors: {
+      //       details: "The requested book does not exist.",
+      //     },
+      //   });
+      // }
 
       res.status(200).json({
         status: "success",
@@ -191,20 +193,20 @@ class BookController {
 
       if (!book) {
         return res.status(404).json({
-          status: 'error',
+          status: "error",
           code: 404,
-          message: 'Book not found',
+          message: "Book not found",
           errors: {
-            details: 'The requested book does not exist.'
-          }
+            details: "The requested book does not exist.",
+          },
         });
       }
 
       res.status(200).json({
-        status: 'success',
+        status: "success",
         code: 200,
-        message: 'Book deleted successfully',
-        data: null
+        message: "Book deleted successfully",
+        data: null,
       });
     } catch (error) {
       next(error);
