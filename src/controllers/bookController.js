@@ -140,6 +140,50 @@ class BookController {
     }
   }
 
+  // Update book availability
+  static async updateBookAvailability(req, res, next) {
+    const { isAvailable } = req.body;
+
+    if (typeof isAvailable !== "boolean") {
+      return res.status(400).json({
+        status: "error",
+        code: 400,
+        message: "Validation failed",
+        errors: {
+          details: "The 'available' field must be a boolean value.",
+        },
+      });
+    }
+
+    try {
+      const book = await Book.findByIdAndUpdate(
+        req.params.id,
+        { isAvailable },
+        { new: true }
+      );
+
+      if (!book) {
+        return res.status(404).json({
+          status: "error",
+          code: 404,
+          message: "Book not found",
+          errors: {
+            details: "The requested book does not exist.",
+          },
+        });
+      }
+
+      res.status(200).json({
+        status: "success",
+        code: 200,
+        message: "Book availability updated successfully",
+        data: { book },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // Delete a book
   static async deleteBook(req, res, next) {
     try {

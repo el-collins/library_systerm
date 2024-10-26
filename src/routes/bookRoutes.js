@@ -37,6 +37,15 @@ router.put('/books/:id', BookController.updateBook);
 
 /**
  * @swagger
+ * /api/v1/books/{id}/availability:
+ *   patch:
+ *     summary: Update the availability of a book
+ */
+router.patch('/books/:id/availability', BookController.updateBookAvailability);
+
+
+/**
+ * @swagger
  * /api/v1/books/{id}:
  *   delete:
  *     summary: Remove a book from the library
